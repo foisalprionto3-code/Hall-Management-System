@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA_Home Register</title>
+    <script>
+        (function () {
+            try {
+                var savedTheme = localStorage.getItem('theme-preference');
+                var theme = (savedTheme === 'dark' || savedTheme === 'light')
+                    ? savedTheme
+                    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+                document.documentElement.style.colorScheme = theme;
+            } catch (error) {
+                // Ignore storage errors and keep default theme.
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="login-body">
+    <button type="button" class="theme-toggle auth-theme-toggle" data-theme-toggle aria-label="Switch theme">
+        <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+    </button>
+
+    <div class="login-container">
+        <h2>Register for NASA_Home</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+            <li class="flash {{ category if category else 'info' }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        <form action="{{ url_for('register') }}" method="POST">
+            <div class="form-group">
+                <label for="full_name">Full Name:</label>
+                <input type="text" id="full_name" name="full_name" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="user@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <select id="role" name="role" required>
+                    <option value="" disabled selected>Select Role</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Student">Student</option>
+                    <option value="Teacher">Teacher</option>
+                </select>
+            </div>
+            <div class="form-group" id="admin_secret_group" style="display: none;">
+                <label for="admin_secret">Admin Secret Code:</label>
+                <input type="password" id="admin_secret" name="admin_secret" placeholder="Enter admin secret code">
+            </div>
+            <button type="submit" class="btn">Register</button>
+        </form>
+        <p class="mt-3">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script>
+        document.getElementById('role').addEventListener('change', function () {
+            var secretGroup = document.getElementById('admin_secret_group');
+            var secretInput = document.getElementById('admin_secret');
+            if (this.value === 'Admin') {
+                secretGroup.style.display = 'block';
+                secretInput.required = true;
+            } else {
+                secretGroup.style.display = 'none';
+                secretInput.required = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

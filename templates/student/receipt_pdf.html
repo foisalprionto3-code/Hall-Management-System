@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NASA_Home Payment Receipt</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .receipt-box {
+            width: 80%;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .details {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .details th,
+        .details td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 20px;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="receipt-box">
+        <div class="header">
+            <h2>NASA_Home Hostel</h2>
+            <p>Official Payment Receipt</p>
+        </div>
+
+        <p><strong>Student Name:</strong> {{ user_name }}</p>
+        <p><strong>Receipt No:</strong> #{{ payment.id }}</p>
+        <p><strong>Date:</strong> {{ payment.payment_date.strftime('%Y-%m-%d %H:%M') }}</p>
+
+        <table class="details">
+            <tr>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Amount</th>
+            </tr>
+            <tr>
+                <td>{{ payment.payment_type }} Fee</td>
+                <td>{{ payment.status }}</td>
+                <td class="total">Tk {{ "%.2f"|format(payment.amount) }}</td>
+            </tr>
+        </table>
+
+        <p style="margin-top: 50px; text-align:center; color:#777; font-size:14px;">Thank you for your payment!</p>
+    </div>
+</body>
+
+</html>

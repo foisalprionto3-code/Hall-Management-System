@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Payments{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('student_dashboard') }}" {% if request.endpoint=='student_dashboard' %}class="active" {% endif
+        %}>Dashboard</a></li>
+<li><a href="{{ url_for('student_order_food') }}" {% if request.endpoint=='student_order_food' %}class="active" {% endif
+        %}>Order Food</a></li>
+<li><a href="{{ url_for('student_my_orders') }}" {% if request.endpoint=='student_my_orders' %}class="active" {% endif
+        %}>My Orders</a></li>
+<li><a href="{{ url_for('student_hall_fees') }}" {% if request.endpoint=='student_hall_fees' %}class="active" {% endif
+        %}>Hall Fees</a></li>
+<li><a href="{{ url_for('student_payments') }}" {% if request.endpoint in ['student_payments', 'download_receipt' ]
+        %}class="active" {% endif %}>Payments</a></li>
+<li><a href="{{ url_for('student_reading_room') }}" {% if request.endpoint=='student_reading_room' %}class="active" {%
+        endif %}>Room Booking</a></li>
+<li><a href="{{ url_for('student_complaints') }}" {% if request.endpoint=='student_complaints' %}class="active" {% endif
+        %}>Complaints</a></li>
+<li><a href="{{ url_for('student_maintenance') }}" {% if request.endpoint=='student_maintenance' %}class="active" {%
+        endif %}>Maintenance</a></li>
+<li><a href="{{ url_for('chat') }}" {% if request.endpoint=='chat' %}class="active" {% endif %}>Chat with Teacher</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center;">
+    <h2>My Payments</h2>
+    <div style="background:#e74c3c; color:white; padding:15px; border-radius:8px;">
+        <h3>Total Dues: Tk {{ "%.2f"|format(dues) }}</h3>
+    </div>
+</div>
+
+<table style="width:100%; border-collapse: collapse; background:#fff; border-radius:8px; margin-top:20px;">
+    <thead style="background:#2c3e50; color:white;">
+        <tr>
+            <th style="padding:15px; text-align:left;">Date</th>
+            <th style="padding:15px; text-align:left;">Type</th>
+            <th style="padding:15px; text-align:left;">Amount</th>
+            <th style="padding:15px; text-align:left;">Status</th>
+            <th style="padding:15px; text-align:left;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in payments %}
+        <tr style="border-bottom:1px solid #eee;">
+            <td style="padding:15px;">{{ payment.payment_date.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td style="padding:15px;">{{ payment.payment_type }}</td>
+            <td style="padding:15px; font-weight:bold;">Tk {{ "%.2f"|format(payment.amount) }}</td>
+            <td style="padding:15px;">
+                {% if payment.status == 'Pending' %}
+                <span
+                    style="background:#f39c12; color:white; padding:3px 8px; border-radius:12px; font-size:12px;">Pending</span>
+                {% else %}
+                <span
+                    style="background:#2ecc71; color:white; padding:3px 8px; border-radius:12px; font-size:12px;">Paid</span>
+                {% endif %}
+            </td>
+            <td style="padding:15px;">
+                {% if payment.status == 'Pending' %}
+                <form action="{{ url_for('pay_amount', id=payment.id) }}" method="POST"
+                    style="display:flex; align-items:center; gap:10px;">
+                    <label style="font-size:12px; display:flex; align-items:center; gap:6px;">
+                        <input type="checkbox" name="paid_confirm" required>
+                        Paid (Cash)
+                    </label>
+                    <button type="submit" class="btn" style="padding:5px 10px; font-size:12px;">Confirm</button>
+                </form>
+                {% else %}
+                <a href="{{ url_for('download_receipt', id=payment.id) }}"
+                    style="color:#3498db; text-decoration:none; font-weight:bold;">&#128229; PDF</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" style="padding:15px; text-align:center;">No payment records found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

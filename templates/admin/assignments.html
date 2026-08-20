@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Room Assignments{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint=='admin_dashboard' %}class="active" {% endif
+        %}>Dashboard</a></li>
+<li><a href="{{ url_for('admin_rooms') }}" {% if request.endpoint=='admin_rooms' %}class="active" {% endif %}>Manage
+        Rooms</a></li>
+<li><a href="{{ url_for('admin_assignments') }}" {% if request.endpoint=='admin_assignments' %}class="active" {% endif
+        %}>Room Assignments</a></li>
+<li><a href="{{ url_for('admin_food') }}" {% if request.endpoint=='admin_food' %}class="active" {% endif %}>Manage Food
+        Items</a></li>
+<li><a href="{{ url_for('admin_orders') }}" {% if request.endpoint=='admin_orders' %}class="active" {% endif %}>View
+        Orders</a></li>
+<li><a href="{{ url_for('admin_complaints') }}" {% if request.endpoint=='admin_complaints' %}class="active" {% endif
+        %}>View Complaints</a></li>
+<li><a href="{{ url_for('admin_maintenance') }}" {% if request.endpoint=='admin_maintenance' %}class="active" {% endif
+        %}>Maintenance Requests</a></li>
+<li><a href="{{ url_for('admin_fees') }}" {% if request.endpoint=='admin_fees' %}class="active" {% endif %}>Hall
+        Fees</a></li>
+<li><a href="{{ url_for('admin_notices') }}" {% if request.endpoint in ['admin_notices', 'admin_toggle_notice'
+        , 'admin_pin_notice' , 'admin_delete_notice' ] %}class="active" {% endif %}>Notice Board</a></li>
+{% endblock %}
+
+{% block content %}
+<h2>Room Assignments</h2>
+
+<div class="glass-form" style="margin-bottom: 20px;">
+    <h3>Assign Student to Room</h3>
+    <form action="{{ url_for('admin_assignments') }}" method="POST"
+        style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+        <div class="form-group" style="margin-bottom:0; flex:1; min-width: 150px;">
+            <label>Student</label>
+            <select name="student_id" required>
+                <option value="" disabled selected>Select Unassigned Student</option>
+                {% for student in unassigned_students %}
+                <option value="{{ student.id }}">{{ student.full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0; flex:1;">
+            <label>Room</label>
+            <select name="room_id" required>
+                <option value="" disabled selected>Select Room</option>
+                {% for room in rooms %}
+                <option value="{{ room.id }}">Room {{ room.room_number }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+            <label style="opacity: 0; user-select: none; pointer-events: none;">Action</label>
+            <button type="submit" class="btn" style="height: 48px; border-radius: 8px;">Assign</button>
+        </div>
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table>
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Assigned Room</th>
+                <th>Assigned Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assignment in assignments %}
+            <tr>
+                <td>{{ assignment.full_name }}</td>
+                <td>Room {{ assignment.room_number }}</td>
+                <td>{{ assignment.assigned_date.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    <form action="{{ url_for('remove_assignment', id=assignment.id) }}" method="POST"
+                        onsubmit="return confirm('Remove student from room?');" style="display:inline;">
+                        <button type="submit" class="btn btn-danger"
+                            style="padding: 6px 12px; font-size: 13px; margin: 0;">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">No students assigned to rooms yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Assigned Rooms{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('teacher_dashboard') }}" {% if request.endpoint == 'teacher_dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+<li><a href="{{ url_for('teacher_rooms') }}" {% if request.endpoint == 'teacher_rooms' %}class="active"{% endif %}>Assigned Rooms</a></li>
+<li><a href="{{ url_for('teacher_complaints') }}" {% if request.endpoint == 'teacher_complaints' %}class="active"{% endif %}>Room Complaints</a></li>
+<li><a href="{{ url_for('chat') }}" {% if request.endpoint == 'chat' %}class="active"{% endif %}>Messages</a></li>
+{% endblock %}
+
+{% block content %}
+<h2>Assigned Rooms Overview</h2>
+{% for r in rooms %}
+<div class="card" style="margin-bottom:20px;">
+    <div
+        style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #ecf0f1; padding-bottom:10px; margin-bottom:15px;">
+        <h3 style="margin:0; color:var(--text-main);">Room {{ r.room_number }}</h3>
+        <span style="background:rgba(255,255,255,0.1); color:var(--text-main); padding:6px 16px; border-radius:20px; font-size:13px; font-weight:600; border:1px solid rgba(255,255,255,0.2);">
+            Occupancy: {{ r.current_occupancy }} / {{ r.capacity }}
+        </span>
+    </div>
+
+    {% if r.students %}
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        {% for s in r.students %}
+        <details style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; cursor: pointer;">
+            <summary style="padding: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; outline: none; list-style: none;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #3b82f6); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                    {{ s.full_name[0] | upper }}
+                </div>
+                {{ s.full_name }}
+                <span style="margin-left: auto; font-size: 12px; color: var(--text-muted);">Click to see details</span>
+            </summary>
+            <div style="padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.1);">
+                <p style="margin: 0 0 10px 0; font-size: 14px;"><strong>Email:</strong> {{ s.email }}</p>
+                <p style="margin: 0; font-size: 14px;"><strong>Assigned Date:</strong> <span style="background: rgba(16,185,129,0.2); color: #10b981; padding: 2px 8px; border-radius: 4px; font-size: 12px;">{{ s.assigned_date.strftime('%Y-%m-%d') }}</span></p>
+            </div>
+        </details>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="color:var(--text-muted); font-style:italic;">No students currently assigned to this room.</p>
+    {% endif %}
+</div>
+{% else %}
+<div class="card" style="text-align:center;">
+    <p style="color:var(--text-muted);">You have not been assigned to supervise any rooms.</p>
+</div>
+{% endfor %}
+{% endblock %}

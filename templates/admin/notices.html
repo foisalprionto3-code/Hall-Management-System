@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Notice Board Management{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint=='admin_dashboard' %}class="active" {% endif
+        %}>Dashboard</a></li>
+<li><a href="{{ url_for('admin_rooms') }}" {% if request.endpoint=='admin_rooms' %}class="active" {% endif %}>Manage
+        Rooms</a></li>
+<li><a href="{{ url_for('admin_assignments') }}" {% if request.endpoint=='admin_assignments' %}class="active" {% endif
+        %}>Room Assignments</a></li>
+<li><a href="{{ url_for('admin_food') }}" {% if request.endpoint=='admin_food' %}class="active" {% endif %}>Manage Food
+        Items</a></li>
+<li><a href="{{ url_for('admin_orders') }}" {% if request.endpoint=='admin_orders' %}class="active" {% endif %}>View
+        Orders</a></li>
+<li><a href="{{ url_for('admin_complaints') }}" {% if request.endpoint=='admin_complaints' %}class="active" {% endif
+        %}>View Complaints</a></li>
+<li><a href="{{ url_for('admin_maintenance') }}" {% if request.endpoint=='admin_maintenance' %}class="active" {% endif
+        %}>Maintenance Requests</a></li>
+<li><a href="{{ url_for('admin_fees') }}" {% if request.endpoint=='admin_fees' %}class="active" {% endif %}>Hall
+        Fees</a></li>
+<li><a href="{{ url_for('admin_notices') }}" {% if request.endpoint in ['admin_notices', 'admin_toggle_notice'
+        , 'admin_pin_notice' , 'admin_delete_notice' ] %}class="active" {% endif %}>Notice Board</a></li>
+{% endblock %}
+
+{% block content %}
+<h2>Notice Board Management</h2>
+
+<form action="{{ url_for('admin_notices') }}" method="POST">
+    <h3>Create New Notice</h3>
+
+    <div class="form-group">
+        <label for="title">Notice Title</label>
+        <input type="text" id="title" name="title" required maxlength="255" placeholder="Exam schedule update">
+    </div>
+
+    <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required placeholder="Write full notice text here..."></textarea>
+    </div>
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+        <div class="form-group" style="flex:1; min-width:180px; margin-bottom:0;">
+            <label for="target_role">Target Audience</label>
+            <select id="target_role" name="target_role">
+                {% for role in target_roles %}
+                <option value="{{ role }}">{{ role }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group" style="flex:1; min-width:220px; margin-bottom:0;">
+            <label for="expires_at">Expires At (optional)</label>
+            <input type="datetime-local" id="expires_at" name="expires_at">
+        </div>
+
+        <div class="form-group" style="min-width:170px; margin-bottom:0;">
+            <label style="display:flex; gap:8px; align-items:center; margin-bottom:10px; font-weight:500;">
+                <input type="checkbox" name="is_pinned" value="1" style="width:auto; margin-bottom:0;">
+                Pin this notice
+            </label>
+            <button type="submit" class="btn" style="width:auto; padding:10px 18px;">Publish</button>
+        </div>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Audience</th>
+                <th>Pinned</th>
+                <th>Status</th>
+                <th>Expires</th>
+                <th>Created By</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for notice in notices %}
+            <tr>
+                <td>
+                    <strong>{{ notice.title }}</strong>
+                    <div style="color:#64748b; margin-top:6px; white-space:pre-wrap;">{{ notice.message }}</div>
+                </td>
+                <td>{{ notice.target_role }}</td>
+                <td>
+                    {% if notice.is_pinned %}
+                    <span
+                        style="background:#3b82f6; color:#fff; padding:5px 10px; border-radius:999px; font-size:11px;">Pinned</span>
+                    {% else %}
+                    <span
+                        style="background:#94a3b8; color:#fff; padding:5px 10px; border-radius:999px; font-size:11px;">Normal</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if notice.is_active %}
+                    <span
+                        style="background:#10b981; color:#fff; padding:5px 10px; border-radius:999px; font-size:11px;">Active</span>
+                    {% else %}
+                    <span
+                        style="background:#ef4444; color:#fff; padding:5px 10px; border-radius:999px; font-size:11px;">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>{{ notice.expires_at.strftime('%Y-%m-%d %H:%M') if notice.expires_at else 'No expiry' }}</td>
+                <td>{{ notice.created_by_name if notice.created_by_name else 'Unknown' }}</td>
+                <td>{{ notice.created_at.strftime('%Y-%m-%d %H:%M') if notice.created_at else '-' }}</td>
+                <td>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <form action="{{ url_for('admin_toggle_notice', id=notice.id) }}" method="POST">
+                            <button type="submit" class="btn" style="width:auto; padding:6px 10px; font-size:12px;">
+                                {{ 'Deactivate' if notice.is_active else 'Activate' }}
+                            </button>
+                        </form>
+                        <form action="{{ url_for('admin_pin_notice', id=notice.id) }}" method="POST">
+                            <button type="submit" class="btn" style="width:auto; padding:6px 10px; font-size:12px;">
+                                {{ 'Unpin' if notice.is_pinned else 'Pin' }}
+                            </button>
+                        </form>
+                        <form action="{{ url_for('admin_delete_notice', id=notice.id) }}" method="POST"
+                            onsubmit="return confirm('Delete this notice?');">
+                            <button type="submit" class="btn btn-danger"
+                                style="width:auto; padding:6px 10px; font-size:12px;">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">No notices yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

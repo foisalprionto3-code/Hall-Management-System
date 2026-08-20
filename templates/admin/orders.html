@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}View Orders{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint=='admin_dashboard' %}class="active" {% endif
+                %}>Dashboard</a></li>
+<li><a href="{{ url_for('admin_rooms') }}" {% if request.endpoint=='admin_rooms' %}class="active" {% endif %}>Manage
+                Rooms</a></li>
+<li><a href="{{ url_for('admin_assignments') }}" {% if request.endpoint=='admin_assignments' %}class="active" {% endif
+                %}>Room Assignments</a></li>
+<li><a href="{{ url_for('admin_food') }}" {% if request.endpoint=='admin_food' %}class="active" {% endif %}>Manage Food
+                Items</a></li>
+<li><a href="{{ url_for('admin_orders') }}" {% if request.endpoint=='admin_orders' %}class="active" {% endif %}>View
+                Orders</a></li>
+<li><a href="{{ url_for('admin_complaints') }}" {% if request.endpoint=='admin_complaints' %}class="active" {% endif
+                %}>View Complaints</a></li>
+<li><a href="{{ url_for('admin_maintenance') }}" {% if request.endpoint=='admin_maintenance' %}class="active" {% endif
+                %}>Maintenance Requests</a></li>
+<li><a href="{{ url_for('admin_fees') }}" {% if request.endpoint=='admin_fees' %}class="active" {% endif %}>Hall
+                Fees</a></li>
+<li><a href="{{ url_for('admin_notices') }}" {% if request.endpoint in ['admin_notices', 'admin_toggle_notice'
+                , 'admin_pin_notice' , 'admin_delete_notice' ] %}class="active" {% endif %}>Notice Board</a></li>
+{% endblock %}
+
+{% block content %}
+<h2>All Student Orders</h2>
+
+<div class="table-responsive">
+        <table>
+                <thead>
+                        <tr>
+                                <th>Order ID</th>
+                                <th>Student</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                        </tr>
+                </thead>
+                <tbody>
+                        {% for order in orders %}
+                        <tr>
+                                <td>#{{ order.id }}</td>
+                                <td>{{ order.student_name }}</td>
+                                <td>{{ order['items'] }}</td>
+                                <td>Tk {{ order.total_amount }}</td>
+                                <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                                <td colspan="5">No orders found.</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+        </table>
+</div>
+{% endblock %}

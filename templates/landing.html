@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA_Home - Smart Hostel Management</title>
+    <script>
+        (function () {
+            try {
+                var savedTheme = localStorage.getItem('theme-preference');
+                var theme = (savedTheme === 'dark' || savedTheme === 'light')
+                    ? savedTheme
+                    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+                document.documentElement.style.colorScheme = theme;
+            } catch (error) {
+                // Ignore storage errors and keep default theme.
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+</head>
+
+<body class="landing-page">
+    <div class="landing-orb landing-orb-1"></div>
+    <div class="landing-orb landing-orb-2"></div>
+
+    <nav class="landing-nav">
+        <div class="landing-shell landing-nav-inner">
+            <a href="{{ url_for('index') }}" class="brand-mark">NASA_Home</a>
+
+            <div class="landing-links">
+                <a href="#features">Features</a>
+                <a href="#roles">Roles</a>
+                <a href="#workflow">Workflow</a>
+                <a href="#preview">Preview</a>
+                <a href="#faq">FAQ</a>
+            </div>
+
+            <div class="landing-actions">
+                <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme">
+                    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+                </button>
+                {% if 'user_id' in session %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-inline">Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-inline btn-ghost">Logout</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-inline btn-ghost">Login</a>
+                <a href="{{ url_for('register') }}" class="btn btn-inline">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero-section">
+            <div class="landing-shell hero-grid">
+                <div class="hero-copy reveal">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    <ul class="flashes landing-flashes">
+                        {% for category, message in messages %}
+                        <li class="flash {{ category if category else 'info' }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% endwith %}
+
+                    <p class="eyebrow">All-in-one hostel operations</p>
+                    <h1>A cleaner hostel life for students, teachers, and admin.</h1>
+                    <p class="hero-subtitle">
+                        NASA_Home brings room assignment, food ordering, complaints, maintenance,
+                        chat, fee tracking, and a shared alerts center into one smooth platform.
+                    </p>
+
+                    <div class="hero-actions">
+                        {% if 'user_id' in session %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-inline btn-large">Go to Dashboard</a>
+                        {% else %}
+                        <a href="{{ url_for('register') }}" class="btn btn-inline btn-large">Create Account</a>
+                        <a href="{{ url_for('login') }}" class="btn btn-inline btn-ghost btn-large">Login</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="hero-panel reveal">
+                    <div class="hero-panel-head">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="hero-panel-body">
+                        <div class="panel-stat">
+                            <h4>Room Management</h4>
+                            <p>Capacity-aware assignment with teacher mapping.</p>
+                        </div>
+                        <div class="panel-stat">
+                            <h4>Food & Payments</h4>
+                            <p>Order meals and track pending or paid balances.</p>
+                        </div>
+                        <div class="panel-stat">
+                            <h4>Support Desk</h4>
+                            <p>Complaint and maintenance tracking with status updates.</p>
+                        </div>
+                        <div class="panel-stat">
+                            <h4>Alerts & Notice Board</h4>
+                            <p>Instant role-based updates and campus-wide announcements.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="section-block">
+            <div class="landing-shell">
+                <div class="section-title reveal">
+                    <p>Core Features</p>
+                    <h2>Everything your hostel needs, in one flow</h2>
+                </div>
+                <div class="feature-grid">
+                    <article class="card feature-card reveal">
+                        <h3>Smart Room Allocation</h3>
+                        <p>Manage rooms, monitor occupancy, and assign students confidently.</p>
+                    </article>
+                    <article class="card feature-card reveal">
+                        <h3>Meal Ordering System</h3>
+                        <p>Students order food quickly while admins manage menu and pricing.</p>
+                    </article>
+                    <article class="card feature-card reveal">
+                        <h3>Hall Fees & Receipts</h3>
+                        <p>Track unpaid dues, mark payments, and generate receipts.</p>
+                    </article>
+                    <article class="card feature-card reveal">
+                        <h3>Complaint Tracking</h3>
+                        <p>Submit issues, review status updates, and improve transparency.</p>
+                    </article>
+                    <article class="card feature-card reveal">
+                        <h3>Maintenance Requests</h3>
+                        <p>Keep facilities healthy with structured issue and status management.</p>
+                    </article>
+                    <article class="card feature-card reveal">
+                        <h3>Built-in Real-time Chat</h3>
+                        <p>Students and teachers communicate with room-aware contact filtering.</p>
+                    </article>
+                    <article class="card feature-card reveal">
+                        <h3>Alerts Center & Notice Board</h3>
+                        <p>Every role gets live notifications plus admin-controlled public notices.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="roles" class="section-block">
+            <div class="landing-shell">
+                <div class="section-title reveal">
+                    <p>Role Based Usage</p>
+                    <h2>Designed for each user type</h2>
+                </div>
+                <div class="role-grid">
+                    <article class="card role-card reveal">
+                        <h3>Admin</h3>
+                        <ul>
+                            <li>Manage users, rooms, fees, and food items.</li>
+                            <li>Review complaints and update maintenance status.</li>
+                            <li>Publish targeted notices for all users or selected roles.</li>
+                            <li>Monitor hostel-wide operations from one dashboard.</li>
+                        </ul>
+                    </article>
+                    <article class="card role-card reveal">
+                        <h3>Student</h3>
+                        <ul>
+                            <li>View room, dues, orders, and payment history.</li>
+                            <li>Book reading room slots and place food orders.</li>
+                            <li>Submit complaints and maintenance requests.</li>
+                            <li>Receive live alerts and notice board announcements.</li>
+                        </ul>
+                    </article>
+                    <article class="card role-card reveal">
+                        <h3>Teacher</h3>
+                        <ul>
+                            <li>Manage allocated room students.</li>
+                            <li>Track room-level complaints quickly.</li>
+                            <li>Coordinate with students through in-app chat.</li>
+                            <li>Receive issue alerts and notice board updates in one panel.</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="workflow" class="section-block">
+            <div class="landing-shell">
+                <div class="section-title reveal">
+                    <p>How It Works</p>
+                    <h2>Simple workflow from day one</h2>
+                </div>
+                <div class="workflow-grid">
+                    <article class="workflow-step reveal">
+                        <span>1</span>
+                        <h3>Register</h3>
+                        <p>Create an account as Student, Teacher, or Admin.</p>
+                    </article>
+                    <article class="workflow-step reveal">
+                        <span>2</span>
+                        <h3>Log In</h3>
+                        <p>Sign in to open the dashboard made for your role.</p>
+                    </article>
+                    <article class="workflow-step reveal">
+                        <span>3</span>
+                        <h3>Manage Tasks</h3>
+                        <p>Use room, payment, food, and support tools in one platform.</p>
+                    </article>
+                    <article class="workflow-step reveal">
+                        <span>4</span>
+                        <h3>Stay Updated</h3>
+                        <p>Track statuses, alerts, and notices while chatting in real time.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="preview" class="section-block">
+            <div class="landing-shell">
+                <div class="section-title reveal">
+                    <p>Website Snippets</p>
+                    <h2>Quick glimpse of your daily modules and screens</h2>
+                </div>
+                <div class="snippet-grid">
+                    <article class="snippet-card reveal">
+                        <div class="snippet-window variant-admin">
+                            <div class="snippet-dots"><span></span><span></span><span></span></div>
+                            <div class="snippet-ui dashboard-ui">
+                                <div class="stat-grid">
+                                    <div class="ui-card"></div>
+                                    <div class="ui-card"></div>
+                                    <div class="ui-card"></div>
+                                </div>
+                                <div class="ui-line"></div>
+                                <div class="ui-line short"></div>
+                            </div>
+                        </div>
+                        <h3>Admin Dashboard</h3>
+                        <p>Live stats and quick controls for rooms, assignments, fees, and food.</p>
+                    </article>
+
+                    <article class="snippet-card reveal">
+                        <div class="snippet-window variant-rooms">
+                            <div class="snippet-dots"><span></span><span></span><span></span></div>
+                            <div class="snippet-ui table-ui">
+                                <div class="table-head"></div>
+                                <div class="table-row"></div>
+                                <div class="table-row"></div>
+                                <div class="table-row"></div>
+                            </div>
+                        </div>
+                        <h3>Room Assignment View</h3>
+                        <p>Capacity-focused room allocation with occupancy visibility.</p>
+                    </article>
+
+                    <article class="snippet-card reveal">
+                        <div class="snippet-window variant-menu">
+                            <div class="snippet-dots"><span></span><span></span><span></span></div>
+                            <div class="snippet-ui menu-ui">
+                                <div class="menu-grid">
+                                    <div class="menu-tile"></div>
+                                    <div class="menu-tile"></div>
+                                    <div class="menu-tile"></div>
+                                    <div class="menu-tile"></div>
+                                </div>
+                                <div class="ui-line"></div>
+                            </div>
+                        </div>
+                        <h3>Food Ordering Screen</h3>
+                        <p>Students can browse meals, set quantities, and place orders quickly.</p>
+                    </article>
+
+                    <article class="snippet-card reveal">
+                        <div class="snippet-window variant-payments">
+                            <div class="snippet-dots"><span></span><span></span><span></span></div>
+                            <div class="snippet-ui payment-ui">
+                                <div class="pay-balance"></div>
+                                <div class="pay-progress"><span></span></div>
+                                <div class="pay-progress"><span class="wide"></span></div>
+                                <div class="pay-progress"><span class="half"></span></div>
+                            </div>
+                        </div>
+                        <h3>Payments & Dues</h3>
+                        <p>Track pending balances, payment records, and due progress in one panel.</p>
+                    </article>
+
+                    <article class="snippet-card reveal">
+                        <div class="snippet-window variant-issues">
+                            <div class="snippet-dots"><span></span><span></span><span></span></div>
+                            <div class="snippet-ui issue-ui">
+                                <div class="issue-item"><span class="issue-line"></span><span class="issue-pill"></span>
+                                </div>
+                                <div class="issue-item"><span class="issue-line"></span><span
+                                        class="issue-pill warning"></span></div>
+                                <div class="issue-item"><span class="issue-line"></span><span
+                                        class="issue-pill success"></span></div>
+                            </div>
+                        </div>
+                        <h3>Complaints & Maintenance</h3>
+                        <p>Status-based issue tracking for faster follow-up and transparency.</p>
+                    </article>
+
+                    <article class="snippet-card reveal">
+                        <div class="snippet-window variant-chat">
+                            <div class="snippet-dots"><span></span><span></span><span></span></div>
+                            <div class="snippet-ui chat-ui">
+                                <div class="bubble left"></div>
+                                <div class="bubble right"></div>
+                                <div class="bubble left short"></div>
+                                <div class="chat-input"></div>
+                            </div>
+                        </div>
+                        <h3>Chat & Coordination</h3>
+                        <p>Real-time conversations between students and assigned teachers.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="section-block">
+            <div class="landing-shell">
+                <div class="section-title reveal">
+                    <p>FAQ</p>
+                    <h2>Common questions</h2>
+                </div>
+                <div class="faq-list reveal">
+                    <details>
+                        <summary>Can one account switch roles later?</summary>
+                        <p>Roles are assigned during registration. If your role changes, an admin can create/update your
+                            access profile.</p>
+                    </details>
+                    <details>
+                        <summary>Is payment tracking available for both hall and meal dues?</summary>
+                        <p>Yes. The platform tracks hall fees and meal-related pending payments in a unified payment
+                            flow.</p>
+                    </details>
+                    <details>
+                        <summary>How do complaint and maintenance updates appear?</summary>
+                        <p>Updates appear in each role dashboard and Alerts Center, so users can follow status changes
+                            without external tools.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <section class="bottom-cta section-block">
+            <div class="landing-shell reveal">
+                <h2>Ready to use NASA_Home?</h2>
+                <p>Start in seconds and manage your hostel ecosystem from one place.</p>
+                <div class="cta-actions">
+                    {% if 'user_id' in session %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-inline btn-large">Go to Dashboard</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-inline btn-ghost btn-large">Logout</a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-inline btn-ghost btn-large">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-inline btn-large">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="landing-footer">
+        <div class="landing-shell">
+            <p>NASA_Home - Hostel Management Platform</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+</body>
+
+</html>

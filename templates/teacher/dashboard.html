@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('teacher_dashboard') }}" {% if request.endpoint == 'teacher_dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+<li><a href="{{ url_for('teacher_rooms') }}" {% if request.endpoint == 'teacher_rooms' %}class="active"{% endif %}>Assigned Rooms</a></li>
+<li><a href="{{ url_for('teacher_complaints') }}" {% if request.endpoint == 'teacher_complaints' %}class="active"{% endif %}>Room Complaints</a></li>
+<li><a href="{{ url_for('chat') }}" {% if request.endpoint == 'chat' %}class="active"{% endif %}>Messages</a></li>
+{% endblock %}
+
+{% block content %}
+<h2>Teacher Dashboard</h2>
+
+<div class="dashboard-cards">
+    <div class="card">
+        <h3>My Assigned Rooms</h3>
+        <p style="font-size:16px; font-weight:normal; margin-bottom:15px; color:#555;">Manage your designated hall rooms
+        </p>
+        <a href="{{ url_for('teacher_rooms') }}"
+            style="display:inline-block; background:#3498db; color:#fff; padding:10px 20px; border-radius:5px; text-decoration:none;">View
+            Rooms</a>
+    </div>
+
+    <div class="card">
+        <h3>Student Complaints</h3>
+        <p style="font-size:16px; font-weight:normal; margin-bottom:15px; color:#555;">Review and address issues</p>
+        <a href="{{ url_for('teacher_complaints') }}"
+            style="display:inline-block; background:#e74c3c; color:#fff; padding:10px 20px; border-radius:5px; text-decoration:none;">View
+            Complaints</a>
+    </div>
+</div>
+{% endblock %}

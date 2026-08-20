@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Rooms{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint=='admin_dashboard' %}class="active" {% endif
+        %}>Dashboard</a></li>
+<li><a href="{{ url_for('admin_rooms') }}" {% if request.endpoint=='admin_rooms' %}class="active" {% endif %}>Manage
+        Rooms</a></li>
+<li><a href="{{ url_for('admin_assignments') }}" {% if request.endpoint=='admin_assignments' %}class="active" {% endif
+        %}>Room Assignments</a></li>
+<li><a href="{{ url_for('admin_food') }}" {% if request.endpoint=='admin_food' %}class="active" {% endif %}>Manage Food
+        Items</a></li>
+<li><a href="{{ url_for('admin_orders') }}" {% if request.endpoint=='admin_orders' %}class="active" {% endif %}>View
+        Orders</a></li>
+<li><a href="{{ url_for('admin_complaints') }}" {% if request.endpoint=='admin_complaints' %}class="active" {% endif
+        %}>View Complaints</a></li>
+<li><a href="{{ url_for('admin_maintenance') }}" {% if request.endpoint=='admin_maintenance' %}class="active" {% endif
+        %}>Maintenance Requests</a></li>
+<li><a href="{{ url_for('admin_fees') }}" {% if request.endpoint=='admin_fees' %}class="active" {% endif %}>Hall
+        Fees</a></li>
+<li><a href="{{ url_for('admin_notices') }}" {% if request.endpoint in ['admin_notices', 'admin_toggle_notice'
+        , 'admin_pin_notice' , 'admin_delete_notice' ] %}class="active" {% endif %}>Notice Board</a></li>
+{% endblock %}
+
+{% block content %}
+<h2>Manage Rooms</h2>
+
+<div class="form-container" style="background:#fff; padding:20px; border-radius:8px; margin-bottom: 20px;">
+    <h3>Add New Room</h3>
+    <form action="{{ url_for('admin_rooms') }}" method="POST"
+        style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+        <div class="form-group" style="margin-bottom:0; flex:1; min-width: 150px;">
+            <label>Room Number</label>
+            <input type="text" name="room_number" required>
+        </div>
+        <div class="form-group" style="margin-bottom:0; flex:1;">
+            <label>Capacity</label>
+            <input type="number" name="capacity" required min="1">
+        </div>
+        <div class="form-group" style="margin-bottom:0; flex:1;">
+            <label>Assign Teacher (Optional)</label>
+            <select name="teacher_id">
+                <option value="">None</option>
+                {% for teacher in teachers %}
+                <option value="{{ teacher.id }}">{{ teacher.full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn" style="width:auto; padding: 10px 20px;">Add Room</button>
+    </form>
+</div>
+
+<table style="width:100%; border-collapse: collapse; background:#fff; border-radius:8px; overflow:hidden;">
+    <thead style="background:#2c3e50; color:white;">
+        <tr>
+            <th style="padding:15px; text-align:left;">Room No</th>
+            <th style="padding:15px; text-align:left;">Capacity</th>
+            <th style="padding:15px; text-align:left;">Occupancy</th>
+            <th style="padding:15px; text-align:left;">Teacher</th>
+            <th style="padding:15px; text-align:left;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for room in rooms %}
+        <tr style="border-bottom:1px solid #eee;">
+            <td style="padding:15px;">{{ room.room_number }}</td>
+            <td style="padding:15px;">{{ room.capacity }}</td>
+            <td style="padding:15px;">{{ occupancy.get(room.id|string, 0) }} / {{ room.capacity }}</td>
+            <td style="padding:15px;">
+                <form action="{{ url_for('assign_room_teacher', id=room.id) }}" method="POST"
+                    style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <select name="teacher_id" style="min-width:180px;">
+                        <option value="">None</option>
+                        {% for teacher in teachers %}
+                        <option value="{{ teacher.id }}" {% if room.teacher_id==teacher.id %}selected{% endif %}>{{
+                            teacher.full_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn"
+                        style="width:auto; padding:6px 12px; font-size:12px;">Save</button>
+                </form>
+            </td>
+            <td style="padding:15px;">
+                <form action="{{ url_for('delete_room', id=room.id) }}" method="POST"
+                    onsubmit="return confirm('Delete this room?');" style="display:inline;">
+                    <button type="submit" class="text-danger"
+                        style="background:none; border:none; padding:0; cursor:pointer; text-decoration:none;">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" style="padding:15px; text-align:center;">No rooms found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

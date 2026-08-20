@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('student_dashboard') }}" {% if request.endpoint=='student_dashboard' %}class="active" {% endif
+        %}>Dashboard</a></li>
+<li><a href="{{ url_for('student_order_food') }}" {% if request.endpoint=='student_order_food' %}class="active" {% endif
+        %}>Order Food</a></li>
+<li><a href="{{ url_for('student_my_orders') }}" {% if request.endpoint=='student_my_orders' %}class="active" {% endif
+        %}>My Orders</a></li>
+<li><a href="{{ url_for('student_hall_fees') }}" {% if request.endpoint=='student_hall_fees' %}class="active" {% endif
+        %}>Hall Fees</a></li>
+<li><a href="{{ url_for('student_payments') }}" {% if request.endpoint in ['student_payments', 'download_receipt' ]
+        %}class="active" {% endif %}>Payments</a></li>
+<li><a href="{{ url_for('student_reading_room') }}" {% if request.endpoint=='student_reading_room' %}class="active" {%
+        endif %}>Room Booking</a></li>
+<li><a href="{{ url_for('student_complaints') }}" {% if request.endpoint=='student_complaints' %}class="active" {% endif
+        %}>Complaints</a></li>
+<li><a href="{{ url_for('student_maintenance') }}" {% if request.endpoint=='student_maintenance' %}class="active" {%
+        endif %}>Maintenance</a></li>
+<li><a href="{{ url_for('chat') }}" {% if request.endpoint=='chat' %}class="active" {% endif %}>Chat with Teacher</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-cards">
+    <div class="card">
+        <h3>My Room</h3>
+        <p>{{ my_room }}</p>
+    </div>
+    <div class="card">
+        <h3>Pending Dues</h3>
+        <p>Tk {{ "%.2f"|format(pending_dues) }}</p>
+    </div>
+    <div class="card">
+        <h3>Recent Orders</h3>
+        <p>{{ order_count }}</p>
+    </div>
+</div>
+{% endblock %}

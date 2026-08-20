@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}View Complaints{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint=='admin_dashboard' %}class="active" {% endif
+        %}>Dashboard</a></li>
+<li><a href="{{ url_for('admin_rooms') }}" {% if request.endpoint=='admin_rooms' %}class="active" {% endif %}>Manage
+        Rooms</a></li>
+<li><a href="{{ url_for('admin_assignments') }}" {% if request.endpoint=='admin_assignments' %}class="active" {% endif
+        %}>Room Assignments</a></li>
+<li><a href="{{ url_for('admin_food') }}" {% if request.endpoint=='admin_food' %}class="active" {% endif %}>Manage Food
+        Items</a></li>
+<li><a href="{{ url_for('admin_orders') }}" {% if request.endpoint=='admin_orders' %}class="active" {% endif %}>View
+        Orders</a></li>
+<li><a href="{{ url_for('admin_complaints') }}" {% if request.endpoint=='admin_complaints' %}class="active" {% endif
+        %}>View Complaints</a></li>
+<li><a href="{{ url_for('admin_maintenance') }}" {% if request.endpoint=='admin_maintenance' %}class="active" {% endif
+        %}>Maintenance Requests</a></li>
+<li><a href="{{ url_for('admin_fees') }}" {% if request.endpoint=='admin_fees' %}class="active" {% endif %}>Hall
+        Fees</a></li>
+<li><a href="{{ url_for('admin_notices') }}" {% if request.endpoint in ['admin_notices', 'admin_toggle_notice'
+        , 'admin_pin_notice' , 'admin_delete_notice' ] %}class="active" {% endif %}>Notice Board</a></li>
+{% endblock %}
+
+{% block content %}
+<h2>Student Complaints</h2>
+
+<table
+    style="width:100%; border-collapse: collapse; background:#fff; border-radius:8px; overflow:hidden; margin-top:20px;">
+    <thead style="background:#2c3e50; color:white;">
+        <tr>
+            <th style="padding:15px; text-align:left;">Date</th>
+            <th style="padding:15px; text-align:left;">Student (Room)</th>
+            <th style="padding:15px; text-align:left;">Description</th>
+            <th style="padding:15px; text-align:left;">Status</th>
+            <th style="padding:15px; text-align:left;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for complaint in complaints %}
+        <tr style="border-bottom:1px solid #eee;">
+            <td style="padding:15px;">{{ complaint.created_at.strftime('%Y-%m-%d') }}</td>
+            <td style="padding:15px;">
+                {% if complaint.is_anonymous %}
+                <span style="color:#7f8c8d; font-style:italic;">Anonymous</span>
+                {% else %}
+                {{ complaint.full_name }} (Room {{ complaint.room_number }})
+                {% endif %}
+            </td>
+            <td style="padding:15px; max-width:300px;">
+                {% if complaint.description|length > 50 %}
+                <details>
+                    <summary style="cursor:pointer; color:#2980b9; font-weight:bold; outline:none;">Read Full Complaint
+                    </summary>
+                    <div
+                        style="margin-top:10px; padding:10px; background:#f8f9fa; border-left:3px solid #2980b9; font-size:14px; white-space: pre-wrap; word-wrap: break-word;">
+                        {{ complaint.description }}</div>
+                </details>
+                {% else %}
+                <span style="white-space: pre-wrap; word-wrap: break-word;">{{ complaint.description }}</span>
+                {% endif %}
+            </td>
+            <td style="padding:15px;">
+                {% if complaint.status == 'Pending' %}
+                <span
+                    style="background:#f39c12; color:white; padding:3px 8px; border-radius:12px; font-size:12px;">Pending</span>
+                {% else %}
+                <span
+                    style="background:#2ecc71; color:white; padding:3px 8px; border-radius:12px; font-size:12px;">Reviewed</span>
+                {% endif %}
+            </td>
+            <td style="padding:15px;">
+                {% if complaint.status == 'Pending' %}
+                <form action="{{ url_for('update_complaint', id=complaint.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn" style="padding:5px 10px; font-size:12px;">Mark Reviewed</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" style="padding:15px; text-align:center;">No complaints found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA_Home - {% block title %}{% endblock %}</title>
+    <script>
+        (function () {
+            try {
+                var savedTheme = localStorage.getItem('theme-preference');
+                var theme = (savedTheme === 'dark' || savedTheme === 'light')
+                    ? savedTheme
+                    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+                document.documentElement.style.colorScheme = theme;
+            } catch (error) {
+                // Ignore storage errors and keep default theme.
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>NASA_Home</h2>
+            <button class="close-sidebar" id="closeSidebar" aria-label="Close menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        <ul>
+            {% block sidebar %}{% endblock %}
+            <li><a href="{{ url_for('logout') }}" class="text-danger">Logout</a></li>
+        </ul>
+        <div class="sidebar-footer"
+            style="padding: 20px; text-align: center; color: rgba(255,255,255,0.4); font-size: 12px; margin-top: auto;">
+            v1.2.1
+        </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="main-content">
+        <header>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="header-tools">
+                <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme">
+                    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+                </button>
+
+                <button class="notification-toggle" id="notificationToggle" aria-label="Open alerts center">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M15 17H9M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8z" stroke="currentColor"
+                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span class="notification-badge" id="notificationBadge">0</span>
+                </button>
+
+                <div class="user-info">
+                    <div class="user-avatar">{{ session['full_name'][0] | upper }}</div>
+                    <div class="user-details">
+                        <span class="user-name" title="{{ session['full_name'] }}">{{ session['full_name'] }}</span>
+                        <span class="user-role">{{ session['role'] }}</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                <li class="flash {{ category if category else 'info' }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <div class="notification-overlay" id="notificationOverlay"></div>
+    <aside class="notification-panel" id="notificationPanel" aria-hidden="true">
+        <div class="notification-panel-header">
+            <div>
+                <h3>Alerts Center</h3>
+                <p>Latest updates for your account</p>
+            </div>
+            <div class="notification-panel-controls">
+                {% if session.get('role') == 'Admin' %}
+                <a href="{{ url_for('admin_notices') }}" class="notification-manage-link">Manage</a>
+                {% endif %}
+                <button type="button" class="notification-close" id="closeNotificationPanel"
+                    aria-label="Close alerts center">&times;</button>
+            </div>
+        </div>
+
+        <div class="notification-tabs" role="tablist" aria-label="Alerts tabs">
+            <button type="button" class="notification-tab active" data-tab="notifications" role="tab"
+                aria-selected="true">Notifications</button>
+            <button type="button" class="notification-tab" data-tab="notices" role="tab" aria-selected="false">Notice
+                Board</button>
+        </div>
+
+        <div class="notification-panel-actions" id="notificationPanelActions">
+            <button type="button" id="markAllReadBtn">Mark all read</button>
+        </div>
+
+        <div class="notification-list" id="notificationsList"></div>
+        <div class="notification-list hidden" id="noticesList"></div>
+    </aside>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

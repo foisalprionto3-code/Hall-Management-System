@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Maintenance Requests{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('student_dashboard') }}" {% if request.endpoint == 'student_dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+<li><a href="{{ url_for('student_order_food') }}" {% if request.endpoint == 'student_order_food' %}class="active"{% endif %}>Order Food</a></li>
+<li><a href="{{ url_for('student_my_orders') }}" {% if request.endpoint == 'student_my_orders' %}class="active"{% endif %}>My Orders</a></li>
+<li><a href="{{ url_for('student_hall_fees') }}" {% if request.endpoint == 'student_hall_fees' %}class="active"{% endif %}>Hall Fees</a></li>
+<li><a href="{{ url_for('student_payments') }}" {% if request.endpoint in ['student_payments', 'download_receipt'] %}class="active"{% endif %}>Payments</a></li>
+<li><a href="{{ url_for('student_reading_room') }}" {% if request.endpoint == 'student_reading_room' %}class="active"{% endif %}>Room Booking</a></li>
+<li><a href="{{ url_for('student_complaints') }}" {% if request.endpoint == 'student_complaints' %}class="active"{% endif %}>Complaints</a></li>
+<li><a href="{{ url_for('student_maintenance') }}" {% if request.endpoint == 'student_maintenance' %}class="active"{% endif %}>Maintenance</a></li>
+<li><a href="{{ url_for('chat') }}" {% if request.endpoint == 'chat' %}class="active"{% endif %}>Chat with Teacher</a></li>
+{% endblock %}
+
+{% block content %}
+<h2>Request Maintenance</h2>
+
+<div class="form-container" style="background:#fff; padding:20px; border-radius:8px; margin-bottom: 20px;">
+    <form action="{{ url_for('student_maintenance') }}" method="POST">
+        <div class="form-group">
+            <label>Issue Description (What needs fixing in your room?)</label>
+            <input type="text" name="issue" required placeholder="e.g., Broken fan, leaking tap...">
+        </div>
+        <button type="submit" class="btn" style="width:auto; padding: 10px 20px;">Submit Request</button>
+    </form>
+</div>
+
+<h3>My Previous Requests</h3>
+<table
+    style="width:100%; border-collapse: collapse; background:#fff; border-radius:8px; overflow:hidden; margin-top:10px;">
+    <thead style="background:#2c3e50; color:white;">
+        <tr>
+            <th style="padding:15px; text-align:left;">Date</th>
+            <th style="padding:15px; text-align:left;">Issue</th>
+            <th style="padding:15px; text-align:left;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for req in requests %}
+        <tr style="border-bottom:1px solid #eee;">
+            <td style="padding:15px;">{{ req.created_at.strftime('%Y-%m-%d') }}</td>
+            <td style="padding:15px;">{{ req.issue }}</td>
+            <td style="padding:15px;">
+                {% if req.status == 'Pending' %}
+                <span
+                    style="background:#e74c3c; color:white; padding:3px 8px; border-radius:12px; font-size:12px;">Pending</span>
+                {% elif req.status == 'In Progress' %}
+                <span style="background:#f39c12; color:white; padding:3px 8px; border-radius:12px; font-size:12px;">In
+                    Progress</span>
+                {% else %}
+                <span
+                    style="background:#2ecc71; color:white; padding:3px 8px; border-radius:12px; font-size:12px;">Resolved</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3" style="padding:15px; text-align:center;">You haven't requested any maintenance.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

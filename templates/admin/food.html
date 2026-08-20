@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Food Items{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint=='admin_dashboard' %}class="active" {% endif
+        %}>Dashboard</a></li>
+<li><a href="{{ url_for('admin_rooms') }}" {% if request.endpoint=='admin_rooms' %}class="active" {% endif %}>Manage
+        Rooms</a></li>
+<li><a href="{{ url_for('admin_assignments') }}" {% if request.endpoint=='admin_assignments' %}class="active" {% endif
+        %}>Room Assignments</a></li>
+<li><a href="{{ url_for('admin_food') }}" {% if request.endpoint=='admin_food' %}class="active" {% endif %}>Manage Food
+        Items</a></li>
+<li><a href="{{ url_for('admin_orders') }}" {% if request.endpoint=='admin_orders' %}class="active" {% endif %}>View
+        Orders</a></li>
+<li><a href="{{ url_for('admin_complaints') }}" {% if request.endpoint=='admin_complaints' %}class="active" {% endif
+        %}>View Complaints</a></li>
+<li><a href="{{ url_for('admin_maintenance') }}" {% if request.endpoint=='admin_maintenance' %}class="active" {% endif
+        %}>Maintenance Requests</a></li>
+<li><a href="{{ url_for('admin_fees') }}" {% if request.endpoint=='admin_fees' %}class="active" {% endif %}>Hall
+        Fees</a></li>
+<li><a href="{{ url_for('admin_notices') }}" {% if request.endpoint in ['admin_notices', 'admin_toggle_notice'
+        , 'admin_pin_notice' , 'admin_delete_notice' ] %}class="active" {% endif %}>Notice Board</a></li>
+{% endblock %}
+
+{% block content %}
+<h2>Manage Food Items</h2>
+
+<div class="form-container" style="background:#fff; padding:20px; border-radius:8px; margin-bottom: 20px;">
+    <h3>Add New Food Item</h3>
+    <form action="{{ url_for('admin_food') }}" method="POST"
+        style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+        <div class="form-group" style="margin-bottom:0; flex:1; min-width: 150px;">
+            <label>Item Name</label>
+            <input type="text" name="name" required>
+        </div>
+        <div class="form-group" style="margin-bottom:0; flex:1;">
+            <label>Category</label>
+            <select name="category" required>
+                <option value="Veg">Veg</option>
+                <option value="Non-Veg">Non-Veg</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0; flex:1;">
+            <label>Price</label>
+            <input type="number" step="0.01" name="price" required min="0">
+        </div>
+        <button type="submit" class="btn" style="width:auto; padding: 10px 20px;">Add Item</button>
+    </form>
+</div>
+
+<table style="width:100%; border-collapse: collapse; background:#fff; border-radius:8px; overflow:hidden;">
+    <thead style="background:#2c3e50; color:white;">
+        <tr>
+            <th style="padding:15px; text-align:left;">Name</th>
+            <th style="padding:15px; text-align:left;">Category</th>
+            <th style="padding:15px; text-align:left;">Price</th>
+            <th style="padding:15px; text-align:left;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for food in foods %}
+        <tr style="border-bottom:1px solid #eee;">
+            <td style="padding:15px;">{{ food.name }}</td>
+            <td style="padding:15px;">
+                {% if food.category == 'Veg' %}
+                <span
+                    style="background:#2ecc71; color:white; padding:3px 8px; border-radius:12px; font-size:12px;">Veg</span>
+                {% elif food.category == 'Non-Veg' %}
+                <span
+                    style="background:#e74c3c; color:white; padding:3px 8px; border-radius:12px; font-size:12px;">Non-Veg</span>
+                {% else %}
+                <span
+                    style="background:#3498db; color:white; padding:3px 8px; border-radius:12px; font-size:12px;">All</span>
+                {% endif %}
+            </td>
+            <td style="padding:15px;">Tk {{ food.price }}</td>
+            <td style="padding:15px;" class="food-action-cell">
+                <div class="action-buttons">
+                    <form action="{{ url_for('delete_food', id=food.id) }}" method="POST" class="inline-action-form"
+                        onsubmit="return confirm('Delete this food item?');">
+                        <button type="submit" class="btn btn-danger food-delete-btn">Delete</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" style="padding:15px; text-align:center;">No food items found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

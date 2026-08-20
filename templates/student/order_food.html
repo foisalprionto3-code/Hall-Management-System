@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Food{% endblock %}
+
+{% block sidebar %}
+<li><a href="{{ url_for('student_dashboard') }}" {% if request.endpoint=='student_dashboard' %}class="active" {% endif
+                %}>Dashboard</a></li>
+<li><a href="{{ url_for('student_order_food') }}" {% if request.endpoint=='student_order_food' %}class="active" {% endif
+                %}>Order Food</a></li>
+<li><a href="{{ url_for('student_my_orders') }}" {% if request.endpoint=='student_my_orders' %}class="active" {% endif
+                %}>My Orders</a></li>
+<li><a href="{{ url_for('student_hall_fees') }}" {% if request.endpoint=='student_hall_fees' %}class="active" {% endif
+                %}>Hall Fees</a></li>
+<li><a href="{{ url_for('student_payments') }}" {% if request.endpoint in ['student_payments', 'download_receipt' ]
+                %}class="active" {% endif %}>Payments</a></li>
+<li><a href="{{ url_for('student_reading_room') }}" {% if request.endpoint=='student_reading_room' %}class="active" {%
+                endif %}>Room Booking</a></li>
+<li><a href="{{ url_for('student_complaints') }}" {% if request.endpoint=='student_complaints' %}class="active" {% endif
+                %}>Complaints</a></li>
+<li><a href="{{ url_for('student_maintenance') }}" {% if request.endpoint=='student_maintenance' %}class="active" {%
+                endif %}>Maintenance</a></li>
+<li><a href="{{ url_for('chat') }}" {% if request.endpoint=='chat' %}class="active" {% endif %}>Chat with Teacher</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<h2>Menu Menus</h2>
+<form action="{{ url_for('student_order_food') }}" method="POST">
+        <div
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top:20px;">
+                {% for food in foods %}
+                <div class="card"
+                        style="padding:15px; text-align:left; display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                                <h4 style="margin-bottom:10px; color:#2c3e50;">{{ food.name }}</h4>
+                                <p style="font-size:14px; margin-bottom:10px;">
+                                        {% if food.category == 'Veg' %}
+                                        <span
+                                                style="background:#2ecc71; color:white; padding:3px 8px; border-radius:12px;">Veg</span>
+                                        {% elif food.category == 'Non-Veg' %}
+                                        <span
+                                                style="background:#e74c3c; color:white; padding:3px 8px; border-radius:12px;">Non-Veg</span>
+                                        {% else %}
+                                        <span
+                                                style="background:#3498db; color:white; padding:3px 8px; border-radius:12px;">All</span>
+                                        {% endif %}
+                                </p>
+                                <p style="font-weight:bold; color:#e74c3c;">Tk {{ food.price }}</p>
+                        </div>
+
+                        <div style="margin-top:15px; display:flex; gap:10px; align-items:center;">
+                                <input type="checkbox" name="items[]" value="{{ food.id }}"
+                                        style="width:20px; height:20px;">
+                                <label>Add to Cart</label>
+                                <input type="number" name="qty_{{ food.id }}" value="1" min="1"
+                                        style="width:60px; padding:5px;">
+                        </div>
+                </div>
+                {% else %}
+                <p>No food items available at the moment.</p>
+                {% endfor %}
+        </div>
+
+        {% if foods %}
+        <div style="margin-top: 30px; text-align:right;">
+                <button type="submit" class="btn" style="width:200px;">Place Order</button>
+        </div>
+        {% endif %}
+</form>
+{% endblock %}
