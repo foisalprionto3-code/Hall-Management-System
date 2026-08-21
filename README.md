@@ -92,7 +92,7 @@ python app.py
 ### 5. Open in Browser
 Open your favorite web browser and go to your localhost URL:
 ```text
-http://127.0.0.1:5000/
+(http://localhost/SMS/)
 ```
 
 - **Login:** Use the pre-loaded users in the `schema.sql` or register a new one. 
